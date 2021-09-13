@@ -6,6 +6,8 @@ import com.tingyu.security.util.CommonResult;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -34,7 +36,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication().withUser("tingyu").password("tingyu1234").roles("admin");
+        auth.inMemoryAuthentication().withUser("tingyu").password("tingyu1234").roles("admin")
+        .and().withUser("user").password("user").roles("user");
     }
 
     @Override
@@ -42,9 +45,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/js/**", "/css/**", "/images/**");
     }
 
+    /**
+     * @Description 角色继承
+     * @Return
+     **/
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        roleHierarchy.setHierarchy("ROLE_admin > ROLE_user");
+        return roleHierarchy;
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().anyRequest().authenticated()
+        http.authorizeRequests()
+                .antMatchers("/admin/**").hasRole("admin")
+                .antMatchers("/user/**").hasRole("user")
+                .anyRequest().authenticated()
                 .and().formLogin().loginPage("/login.html").loginProcessingUrl("/doLogin")
                 .usernameParameter("name").passwordParameter("passwd").defaultSuccessUrl("/index").permitAll()
                 .and().csrf().disable();

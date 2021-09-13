@@ -18,4 +18,16 @@ public class HelloController {
         return "redirect:index.html";
     }
 
+    @GetMapping("/admin/hello")
+    @ResponseBody
+    public String adminHello(){
+        return "admin";
+    }
+
+    @GetMapping("/user/hello")
+    @ResponseBody
+    public String userHello(){
+        return "user";
+    }
+
 }
