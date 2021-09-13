@@ -4,3 +4,9 @@ server:
 spring:
   application:
     name: boot-security
+
+  # spring security配置
+  security:
+    user:
+      name: tingyu
+      password: tingyu
