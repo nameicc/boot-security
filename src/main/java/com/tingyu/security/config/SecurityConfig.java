@@ -63,10 +63,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/admin/**").hasRole("admin")
                 .antMatchers("/user/**").hasRole("user")
                 .anyRequest().authenticated()
-                .and().formLogin().loginPage("/login.html").loginProcessingUrl("/doLogin")
-                .usernameParameter("name").passwordParameter("passwd").defaultSuccessUrl("/index").permitAll()
+                //.and().formLogin().loginPage("/login.html").loginProcessingUrl("/doLogin")
+                //.usernameParameter("name").passwordParameter("passwd").defaultSuccessUrl("/index").permitAll()
+                .and().formLogin()
+                .and().rememberMe().key("tingyu")
                 .and().csrf().disable();
-        http.addFilterAt(loginFilter(), UsernamePasswordAuthenticationFilter.class);
+        //http.addFilterAt(loginFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
     public LoginFilter loginFilter() throws Exception {
