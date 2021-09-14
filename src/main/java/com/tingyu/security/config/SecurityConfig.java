@@ -21,6 +21,7 @@ import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
@@ -66,7 +67,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //.and().formLogin().loginPage("/login.html").loginProcessingUrl("/doLogin")
                 //.usernameParameter("name").passwordParameter("passwd").defaultSuccessUrl("/index").permitAll()
                 .and().formLogin()
-                .and().rememberMe().key("tingyu")
+                .and().rememberMe().key("tingyu").tokenRepository(jdbcTokenRepository())
                 .and().csrf().disable();
         //http.addFilterAt(loginFilter(), UsernamePasswordAuthenticationFilter.class);
     }
@@ -110,4 +111,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         }
         return manager;
     }
+
+    private JdbcTokenRepositoryImpl jdbcTokenRepository() {
+        JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
+        jdbcTokenRepository.setDataSource(dataSource);
+        return jdbcTokenRepository;
+    }
+
 }
