@@ -17,3 +17,5 @@
 8、自动登录（记住我）
 
 9、持久化令牌
+
+10、自定义认证：自定义AuthenticationProvider代替DaoAuthenticationProvider

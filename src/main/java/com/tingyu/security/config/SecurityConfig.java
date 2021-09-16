@@ -1,13 +1,19 @@
 package com.tingyu.security.config;
 
 import cn.hutool.json.JSONUtil;
+import com.google.code.kaptcha.Producer;
+import com.google.code.kaptcha.impl.DefaultKaptcha;
+import com.google.code.kaptcha.util.Config;
 import com.tingyu.security.filter.LoginFilter;
+import com.tingyu.security.security.MyAuthenticationProvider;
 import com.tingyu.security.util.CommonResult;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -30,6 +36,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
 
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -61,11 +70,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
+                .antMatchers("/verifyCode").permitAll()
                 .antMatchers("/admin/**").hasRole("admin")
                 .antMatchers("/user/**").hasRole("user")
                 .anyRequest().authenticated()
-                //.and().formLogin().loginPage("/login.html").loginProcessingUrl("/doLogin")
-                //.usernameParameter("name").passwordParameter("passwd").defaultSuccessUrl("/index").permitAll()
+                .and().formLogin().loginPage("/login.html").loginProcessingUrl("/doLogin")
+                .usernameParameter("name").passwordParameter("passwd").defaultSuccessUrl("/index").permitAll()
                 .and().formLogin()
                 .and().rememberMe().key("tingyu").tokenRepository(jdbcTokenRepository())
                 .and().csrf().disable();
@@ -118,4 +128,37 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return jdbcTokenRepository;
     }
 
+    /**
+     * @Author shichuanfeng
+     * @Description 验证码属性
+     * @Date 2021/9/15 17:07
+     * @Param []
+     * @Return
+     **/
+    @Bean
+    public Producer producer() {
+        Properties properties = new Properties();
+        properties.setProperty("kaptcha.image.width", "150");
+        properties.setProperty("kaptcha.image.height", "50");
+        properties.setProperty("kaptcha.textproducer.char.string", "0123456789");
+        properties.setProperty("kaptcha.textproducer.char.length", "4");
+        Config config = new Config(properties);
+        DefaultKaptcha defaultKaptcha = new DefaultKaptcha();
+        defaultKaptcha.setConfig(config);
+        return defaultKaptcha;
+    }
+
+    private MyAuthenticationProvider myAuthenticationProvider() {
+        MyAuthenticationProvider myAuthenticationProvider = new MyAuthenticationProvider();
+        myAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        myAuthenticationProvider.setUserDetailsService(userDetailsService());
+        return myAuthenticationProvider;
+    }
+
+    @Bean
+    @Override
+    protected AuthenticationManager authenticationManager() {
+        ProviderManager providerManager = new ProviderManager(Arrays.asList(myAuthenticationProvider()));
+        return providerManager;
+    }
 }
