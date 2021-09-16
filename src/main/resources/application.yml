@@ -13,6 +13,6 @@ spring:
 
   # 数据库配置
   datasource:
-    url: jdbc:mysql://47.111.5.242:3306/spring_security?characterEncoding=UTF-8
-    username: fneelink
-    password: '!LijianlonG147258'
+    url: jdbc:mysql://localhost:3306/spring_security?characterEncoding=UTF-8
+    username: root
+    password: root
