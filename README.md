@@ -19,3 +19,7 @@
 9、持久化令牌
 
 10、自定义认证：自定义AuthenticationProvider代替DaoAuthenticationProvider
+
+11、查看登录用户的ip、sessionid
+
+12、同用户多端登录，剔除或者禁止登录处理
