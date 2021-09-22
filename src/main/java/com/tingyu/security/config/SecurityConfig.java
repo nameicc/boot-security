@@ -29,6 +29,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
@@ -46,6 +48,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Resource
     private DataSource dataSource;
+
+    @Resource
+    private FindByIndexNameSessionRepository sessionRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -71,7 +76,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/verifyCode").permitAll()
+                //.antMatchers("/verifyCode").permitAll()
                 .antMatchers("/admin/**").hasRole("admin")
                 .antMatchers("/user/**").hasRole("user")
                 .anyRequest().authenticated()
@@ -80,7 +85,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //.and().formLogin()
                 .and().rememberMe().key("tingyu").tokenRepository(jdbcTokenRepository())
                 .and().csrf().disable()
-                .sessionManagement().maximumSessions(1).maxSessionsPreventsLogin(true);
+                .sessionManagement().maximumSessions(1).maxSessionsPreventsLogin(true).sessionRegistry(sessionRegistry());
         //http.addFilterAt(loginFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
@@ -150,7 +155,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return defaultKaptcha;
     }
 
-    private MyAuthenticationProvider myAuthenticationProvider() {
+    /*private MyAuthenticationProvider myAuthenticationProvider() {
         MyAuthenticationProvider myAuthenticationProvider = new MyAuthenticationProvider();
         myAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         myAuthenticationProvider.setUserDetailsService(userDetailsService());
@@ -162,11 +167,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected AuthenticationManager authenticationManager() {
         ProviderManager providerManager = new ProviderManager(Arrays.asList(myAuthenticationProvider()));
         return providerManager;
-    }
+    }*/
 
     @Bean
     public HttpSessionEventPublisher httpSessionEventPublisher() {
         return new HttpSessionEventPublisher();
+    }
+
+    /**
+     * @Author shichuanfeng
+     * @Description spring session
+     * @Date 2021/9/22 14:21
+     * @Param []
+     * @Return
+     **/
+    public SpringSessionBackedSessionRegistry sessionRegistry() {
+        return new SpringSessionBackedSessionRegistry(sessionRepository);
     }
 
 }
