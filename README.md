@@ -27,3 +27,5 @@
 13、结合Spring Session、Redis实现Session共享
 
 14、防御CSRF攻击
+
+15、密码加密

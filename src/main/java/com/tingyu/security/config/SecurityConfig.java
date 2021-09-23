@@ -21,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
@@ -55,7 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
     }
 
     @Override
@@ -121,11 +122,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public UserDetailsService userDetailsService() {
         JdbcUserDetailsManager manager = new JdbcUserDetailsManager(dataSource);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         if (!manager.userExists("tingyu")) {
-            manager.createUser(User.withUsername("tingyu").password("tingyu1234").roles("admin").build());
+            manager.createUser(User.withUsername("tingyu").password(encoder.encode("tingyu1234")).roles("admin").build());
         }
         if (!manager.userExists("user")) {
-            manager.createUser(User.withUsername("user").password("user").roles("user").build());
+            manager.createUser(User.withUsername("user").password(encoder.encode("user")).roles("user").build());
         }
         return manager;
     }
