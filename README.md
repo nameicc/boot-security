@@ -25,3 +25,5 @@
 12、同用户多端登录，剔除或者禁止登录处理
 
 13、结合Spring Session、Redis实现Session共享
+
+14、防御CSRF攻击

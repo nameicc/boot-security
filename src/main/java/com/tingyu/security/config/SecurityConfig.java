@@ -28,6 +28,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
@@ -84,8 +85,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .usernameParameter("name").passwordParameter("passwd").defaultSuccessUrl("/index").permitAll()
                 //.and().formLogin()
                 .and().rememberMe().key("tingyu").tokenRepository(jdbcTokenRepository())
-                .and().csrf().disable()
-                .sessionManagement().maximumSessions(1).maxSessionsPreventsLogin(true).sessionRegistry(sessionRegistry());
+                .and().csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .and().sessionManagement().maximumSessions(1).maxSessionsPreventsLogin(true).sessionRegistry(sessionRegistry());
         //http.addFilterAt(loginFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
@@ -169,10 +170,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return providerManager;
     }*/
 
-    @Bean
+    /*@Bean
     public HttpSessionEventPublisher httpSessionEventPublisher() {
         return new HttpSessionEventPublisher();
-    }
+    }*/
 
     /**
      * @Author shichuanfeng

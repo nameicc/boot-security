@@ -5,7 +5,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
 <meta name="viewport" content="width=device-width, initial-scale=1"> 
 <title>用户登录</title>
-
+<script src="js/demo-2.js"></script>
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery.cookie.js"></script>
 <link rel="stylesheet" type="text/css" href="css/component.css"/>
 </head>
 <body>
@@ -31,11 +33,19 @@
 						<div class="form_user"><input type="text" name="name" placeholder="用户名" id="signup_email"></div>
 						<div class="form_password"><input type="password" name="passwd" placeholder="密码" id="signup_password"></div>
 					</div>
-					<button type="submit" id="signup_forms_submit"><span><strong>Log in</strong></span></button>
+					<button type="button" id="signup_forms_submit"><span><strong>Log in</strong></span></button>
 				</form>
 			</div>
 		  </div>
 	</div>
-	<script src="js/demo-2.js" ></script>
+	<script>
+		$("#signup_forms_submit").click(function () {
+			let _csrf = $.cookie('XSRF-TOKEN');
+			$.post('/doLogin',{name:$("#signup_email").val(),passwd:$("#signup_password").val(),_csrf:_csrf},function (data) {
+				$("html").html('');
+				$("html").append(data);
+			})
+		})
+	</script>
 </body>
 </html>
