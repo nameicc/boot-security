@@ -6,6 +6,7 @@ import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.google.code.kaptcha.util.Config;
 import com.tingyu.security.filter.LoginFilter;
 import com.tingyu.security.security.MyAuthenticationProvider;
+import com.tingyu.security.service.UserService;
 import com.tingyu.security.util.CommonResult;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,7 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -52,11 +54,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private DataSource dataSource;
 
     @Resource
+    private UserService userService;
+
+    @Resource
     private FindByIndexNameSessionRepository sessionRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userService);
     }
 
     @Override
@@ -118,7 +128,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return loginFilter;
     }
 
-    @Bean
+    /*@Bean
     @Override
     public UserDetailsService userDetailsService() {
         JdbcUserDetailsManager manager = new JdbcUserDetailsManager(dataSource);
@@ -130,7 +140,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             manager.createUser(User.withUsername("user").password(encoder.encode("user")).roles("user").build());
         }
         return manager;
-    }
+    }*/
 
     private JdbcTokenRepositoryImpl jdbcTokenRepository() {
         JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
