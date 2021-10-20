@@ -5,6 +5,8 @@ import com.google.code.kaptcha.Producer;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.google.code.kaptcha.util.Config;
 import com.tingyu.security.filter.LoginFilter;
+import com.tingyu.security.security.MyAccessDeniedHandler;
+import com.tingyu.security.security.MyAuthenticationEntryPoint;
 import com.tingyu.security.security.MyAuthenticationProvider;
 import com.tingyu.security.service.UserService;
 import com.tingyu.security.util.CommonResult;
@@ -59,6 +61,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Resource
     private FindByIndexNameSessionRepository sessionRepository;
 
+    @Resource
+    private MyAuthenticationEntryPoint myAuthenticationEntryPoint;
+
+    @Resource
+    private MyAccessDeniedHandler myAccessDeniedHandler;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -95,6 +103,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().formLogin().loginPage("/login.html").loginProcessingUrl("/doLogin")
                 .usernameParameter("name").passwordParameter("passwd").defaultSuccessUrl("/index").permitAll()
                 //.and().formLogin()
+                .and().exceptionHandling().authenticationEntryPoint(myAuthenticationEntryPoint).accessDeniedHandler(myAccessDeniedHandler)
                 .and().rememberMe().key("tingyu").tokenRepository(jdbcTokenRepository())
                 .and().csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .and().sessionManagement().maximumSessions(1).maxSessionsPreventsLogin(true).sessionRegistry(sessionRegistry());
